@@ -2,9 +2,7 @@
 
 ## 1. Hlavní pohon (Powertrain)
 - [ ] **2x Motor:** JGB37-550 12V, 160 RPM
-- *Robustní motory, které utáhnou ocelový rám.*
 - [ ] **2x Driver motorů:** BTS7960B 43A (H-Můstek)
-- *Výkonné drivery. POZOR: Jetson má logiku 3.3V, tyto drivery sice většinou 3.3V signál vezmou, ale pro jistotu je dobré mít Logic Level Converter (viz sekce Elektronika), aby sis neodpálil GPIO piny na Jetsonu zpětným rázem.*
 
 ## 2. Mozek a Řízení (Brain & Control)
 - [ ] **1x Počítač:** Nvidia Jetson (Nano / Orin)
