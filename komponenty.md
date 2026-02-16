@@ -5,7 +5,7 @@
 - [ ] **2x Driver motorů:** BTS7960B 43A (H-Můstek)
 
 ## 2. Mozek a Řízení (Brain & Control)
-- [ ] **1x Počítač:** Nvidia Jetson (Nano / Orin)
+- [ ] **1x Počítač:** Nvidia Jetson Orin Nano
 - [ ] **1x Napájecí kabel:** DC5525 na XT60
 - [ ] **Ovládání:** Bezdrátová myš
 
@@ -23,12 +23,11 @@
 - [ ] **1x Sada:** Silikonové vodiče 18 AWG (5 barev)
 - [ ] **1x Smršťovací bužírky:** Sada 328 ks
 - [ ] **3x Držák pojistky:** Pro nožovou autopojistku (s vodiči 16AWG)
-- [ ] **Sady pojistek:** Mini (120ks) + Standard (100ks)
 
 ## 5. Elektronika a Propojování
 - [ ] **1x Nepájivé pole:** 830 pinů
-- [ ] **DuPont kabely:** Sady M-M, M-F, F-F (po 40ks)
-- [ ] **Sada rezistorů a kondenzátorů:** (součást seznamu)
+- [ ] **DuPont kabely:** Sady M-M, M-F, F-F 
+- [ ] **Sada rezistorů a kondenzátorů:** 
 
 ## 6. Nářadí
 - [ ] **1x Odizolovací nůž:** LAOA LA815826
