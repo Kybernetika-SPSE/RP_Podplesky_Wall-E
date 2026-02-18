@@ -75,37 +75,37 @@ graph TD
     classDef motor fill:#90ee90,stroke:#333,stroke-width:2px;
 
     %% Power Sources
-    BatA[Li-Po A (12V)]:::pwr --> SwitchA[Vypínač A]
-    BatB[Li-Po B (12V)]:::pwr --> SwitchB[Vypínač B]
-    SwitchA --> FuseA[Pojistka 30A]
-    SwitchB --> FuseB[Pojistka 5A]
+    BatA["Li-Po A (12V)"]:::pwr --> SwitchA["Vypínač A"]
+    BatB["Li-Po B (12V)"]:::pwr --> SwitchB["Vypínač B"]
+    SwitchA --> FuseA["Pojistka 30A"]
+    SwitchB --> FuseB["Pojistka 5A"]
 
     %% Ground Commoning
-    GND_Point((GND BOD)):::gnd
+    GND_Point(("GND BOD")):::gnd
     BatA --- GND_Point
     BatB --- GND_Point
     
     %% High Power Circuit
-    FuseA ==> |12V Tlustý kabel| DriverL[BTS7960 LEFT]:::motor
-    FuseA ==> |12V Tlustý kabel| DriverR[BTS7960 RIGHT]:::motor
-    DriverL ==> MotorL((Levý Motor))
-    DriverR ==> MotorR((Pravý Motor))
+    FuseA ==> |12V Tlustý kabel| DriverL["BTS7960 LEFT"]:::motor
+    FuseA ==> |12V Tlustý kabel| DriverR["BTS7960 RIGHT"]:::motor
+    DriverL ==> MotorL(("Levý Motor"))
+    DriverR ==> MotorR(("Pravý Motor"))
 
     %% Low Power Circuit
-    FuseB --> |12V| Jetson[Jetson Nano]:::logic
-    FuseB --> |12V| StepDown[Měnič 5V]:::pwr
+    FuseB --> |12V| Jetson["Jetson Nano"]:::logic
+    FuseB --> |12V| StepDown["Měnič 5V"]:::pwr
     
     %% Logic & Control
-    StepDown --> |5V| PCA[PCA9685]:::logic
-    StepDown --> |5V| LevelShifter[Level Shifter]:::logic
-    StepDown --> |5V| DriverL_Logic[Driver Logic VCC]
-    StepDown --> |5V| DriverR_Logic[Driver Logic VCC]
+    StepDown --> |5V| PCA["PCA9685"]:::logic
+    StepDown --> |5V| LevelShifter["Level Shifter"]:::logic
+    StepDown --> |5V| DriverL_Logic["Driver Logic VCC"]
+    StepDown --> |5V| DriverR_Logic["Driver Logic VCC"]
 
-    Jetson -- 3.3V I2C --> LevelShifter
-    LevelShifter -- 5V I2C --> PCA
+    Jetson -- "3.3V I2C" --> LevelShifter
+    LevelShifter -- "5V I2C" --> PCA
     
-    PCA -- PWM 0/1 --> DriverL
-    PCA -- PWM 2/3 --> DriverR
+    PCA -- "PWM 0/1" --> DriverL
+    PCA -- "PWM 2/3" --> DriverR
 
     %% Ground Connections
     Jetson --- GND_Point
