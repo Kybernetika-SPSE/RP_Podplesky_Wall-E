@@ -1,15 +1,12 @@
 # WALL-E Off-road Replica (Ročníkový Projekt)
 
-Toto je repozitář pro stavbu funkční repliky robota WALL-E v "Off-road" provedení. Projekt klade důraz na robustní mechanickou konstrukci a moderní elektroniku.
+Toto je repozitář pro stavbu funkční repliky robota WALL-E. Projekt klade důraz na robustní mechanickou konstrukci a moderní elektroniku.
 
-<div align="center">
-  <img src="https://via.placeholder.com/600x400.png?text=WALL-E+Render" alt="WALL-E Render" width="600">
-</div>
 
 ## 🛠️ O Projektu
-Cílem je vytvořit **těžkotonážní repliku (7–8 kg)**, která se v terénu neztratí. Žádné křehké plasty – základem je ocel a kvalitní 3D tisk.
+Cílem je vytvořit **Repliku robota Wall-E**, pomocí 3D tisku a obráběného kovu
 *   **Šasi:** Ocelové pláty (Laser cut) + 3D tisk
-*   **Podvozek:** Pásový system s nezávislým odpružením (kyvná polonáprava)
+*   **Podvozek:** Pásový system s nezávislým odpružením 
 *   **Mozek:** Nvidia Jetson Orin Nano
 
 ## ⚙️ Hardware Specifikace
@@ -32,21 +29,6 @@ Software běží na **Nvidia Jetson** v jazyce **C++**.
 *   [`MODEL/`](./MODEL) - 3D Modely (Inventor/STEP) a podklady pro tisk.
 *   [`komponenty.md`](./komponenty.md) - Seznam použitých dílů (BOM).
 
-## 🚀 Jak začít (Software)
-1.  Nainstalujte závislosti na Jetsonu:
-    ```bash
-    sudo apt-get install libi2c-dev libevdev-dev
-    ```
-2.  Zkompilujte projekt:
-    ```bash
-    cd code
-    mkdir build && cd build
-    cmake .. && make
-    ```
-3.  Spusťte (s připojenou myší):
-    ```bash
-    sudo ./walle_control /dev/input/by-id/VASE_ZARIZENI
-    ```
 
 ---
 **Status:** 🚧 Ve vývoji (Mechanika 60%, Elektronika 40%, Software 20%)
