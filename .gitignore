@@ -21,3 +21,7 @@ Desktop.ini
 # IDEs
 .vscode/
 .idea/
+
+# Private User Folder
+Poznamky/
+private/
