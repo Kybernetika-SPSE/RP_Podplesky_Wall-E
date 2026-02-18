@@ -6,8 +6,9 @@
 
 ## 2. Mozek a Řízení (Brain & Control)
 - [ ] **1x Počítač:** Nvidia Jetson Orin Nano
-- [ ] **1x Napájecí kabel:** DC5525 na XT60
-- [ ] **Ovládání:** Bezdrátová myš
+- [ ] **1x PWM Řadič (I2C):** PCA9685 (16 Channel 12-bit PWM Driver)
+- [ ] **1x Napájecí kabel:** DC5525 na XT60 (5.5x2.5mm Barrel Jack)
+- [ ] **Ovládání:** Bezdrátová myš / Gamepad (Bluetooth)
 
 ## 3. Napájení (Power System)
 - [ ] **2x Li-Po Baterie:** 3500mAh 3S 60C (120C) BigHobby Nano Tech

@@ -1,0 +1,23 @@
+# CMake Build
+code/build/
+*.o
+*.out
+*.exe
+cmake_install.cmake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+
+# Autodesk Inventor
+OldVersions/
+*.lok
+*.ipj.lnk
+
+# System
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# IDEs
+.vscode/
+.idea/
