@@ -32,3 +32,10 @@
 
 ## 6. Nářadí
 - [ ] **1x Odizolovací nůž:** LAOA LA815826
+
+##7. Odhad ceny
+- [ ] 7500Kč Jetson
+- [ ] 3500Kč Baterie, nabíječka atd
+- [ ] 5000Kč Ostatní součástky
+- [ ] 1500Kč Kov
+- [ ] 17500Kč Odhad celkové ceny
