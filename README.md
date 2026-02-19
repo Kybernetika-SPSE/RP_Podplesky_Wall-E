@@ -1,4 +1,4 @@
-# WALL-E Off-road Replica (Ročníkový Projekt)
+# WALL-E Replica (Ročníkový Projekt)
 
 Toto je repozitář pro stavbu funkční repliky robota WALL-E. Projekt klade důraz na robustní mechanickou konstrukci a moderní elektroniku.
 
