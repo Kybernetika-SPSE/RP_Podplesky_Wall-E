@@ -25,3 +25,11 @@ Desktop.ini
 # Private User Folder
 Poznamky/
 private/
+
+# System Generated / IDE Workspace
+Wall-E.code-workspace
+.agents/
+
+# Ignored Folders
+Blueprint/
+AUTOCAD/
