@@ -25,6 +25,7 @@ Desktop.ini
 # Private User Folder
 Poznamky/
 private/
+Dokumentace/
 
 # System Generated / IDE Workspace
 Wall-E.code-workspace
@@ -33,3 +34,7 @@ Wall-E.code-workspace
 # Ignored Folders
 Blueprint/
 AUTOCAD/
+
+# PlatformIO
+.pio/
+.vscode/
