@@ -164,4 +164,4 @@ Z tabulky přímo vyplývají minimalizované logické rovnice pro návrh obvodu
 ### Interaktivní simulace prioritního kodéru ve Falstadu
 Níže je sestaven funkční prioritní kodér 4-na-2 realizovaný pomocí diskrétních hradel (OR, AND, NOT) na základě odvozených logických rovnic. Můžete si vyzkoušet aktivovat více vstupů najednou a sledovat, jak vstup s vyšším indexem maskuje vstupy s nižší prioritou.
 
-<iframe src="(https://wokwi.com/projects/466997191099631617)" width="100%" height="500px" style="border:1px solid #ccc;"></iframe>
+<iframe src="https://wokwi.com/projects/466997191099631617" width="100%" height="500px" style="border:1px solid #ccc;"></iframe>
