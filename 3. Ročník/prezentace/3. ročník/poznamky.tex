@@ -1,0 +1,64 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[czech]{babel}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{enumitem}
+
+\begin{document}
+\thispagestyle{empty}
+
+\begin{center}
+\Huge \textbf{Wall-E: Osnova obhajoby}
+\end{center}
+\vspace{1em}
+
+% Celý text uděláme obrovský, ať to na pultíku přečteš i na půl metru
+\Large
+
+\section*{1. Úvod}
+\begin{itemize}[itemsep=0.5em, label=$\rightarrow$]
+    \item Přivítání.
+    \item \textbf{8kg ocelový stroj} (žádná hračka).
+    \item Vše od nuly: CAD $\rightarrow$ Výroba $\rightarrow$ Kód.
+\end{itemize}
+
+\section*{2. Podvozek (Delta)}
+\begin{itemize}[itemsep=0.5em, label=$\rightarrow$]
+    \item \textbf{Výhoda:} Nízké těžiště $\rightarrow$ náklon \textbf{$> 50^\circ$}.
+    \item \textbf{Nevýhoda:} Extrémní tření při otáčení na místě.
+\end{itemize}
+
+\section*{3. 3D tisk v terénu}
+\begin{itemize}[itemsep=0.5em, label=$\rightarrow$]
+    \item Pásy: \textbf{PETG} (C-háky).
+    \item \textbf{Rizika:} 
+        \begin{itemize}
+            \item \textbf{Abraze} (obrušování o beton).
+            \item \textbf{Kamínky} v kloubech = prasknutí.
+        \end{itemize}
+    \item \textit{[PODAT KOMISI PÁS DO RUKY]}
+\end{itemize}
+
+\section*{4. Zapojení a Soft-start}
+\begin{itemize}[itemsep=0.5em, label=$\rightarrow$]
+    \item Oddělené obvody (Logika vs. Výkon).
+    \item Mozek: \textbf{ESP32-S3} / Svaly: \textbf{Pololu 100:1}.
+    \item \textbf{Soft-start:} Plynulý rozjezd v C++. Zabraňuje stržení převodovek rázem!
+    \item Ovládání: Vlastní Python skript.
+\end{itemize}
+
+\section*{5. Budoucnost (AI)}
+\begin{itemize}[itemsep=0.5em, label=$\rightarrow$]
+    \item Upgrade z RC auta na \textbf{autonomii}.
+    \item \textbf{Kamery + AI:} Trénink rozeznání mé postavy.
+    \item Cíl: Režim \textbf{"Follow Me"}.
+\end{itemize}
+
+\section*{6. Závěr}
+\begin{itemize}[itemsep=0.5em, label=$\rightarrow$]
+    \item Cíl splněn (strojařina + programování).
+    \item Děkuji p. Jedličkovi.
+    \item Dotazy?
+\end{itemize}
+
+\end{document}

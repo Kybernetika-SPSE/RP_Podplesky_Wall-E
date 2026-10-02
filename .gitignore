@@ -1,5 +1,6 @@
-# CMake Build
-code/build/
+# C++ & CMake Build
+build/
+*/build/
 *.o
 *.out
 *.exe
@@ -7,6 +8,10 @@ cmake_install.cmake
 CMakeCache.txt
 CMakeFiles/
 Makefile
+
+# Python
+__pycache__/
+*.pyc
 
 # Autodesk Inventor
 OldVersions/
@@ -18,23 +23,16 @@ OldVersions/
 Thumbs.db
 Desktop.ini
 
-# IDEs
+# IDEs & Workspaces
 .vscode/
 .idea/
+.pio/
+*.code-workspace
+.agents/
 
-# Private User Folder
+# Private / Ignored Folders
 Poznamky/
 private/
 Dokumentace/
-
-# System Generated / IDE Workspace
-Wall-E.code-workspace
-.agents/
-
-# Ignored Folders
 Blueprint/
 AUTOCAD/
-
-# PlatformIO
-.pio/
-.vscode/

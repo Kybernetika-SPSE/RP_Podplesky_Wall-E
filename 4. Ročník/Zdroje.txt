@@ -1,0 +1,23 @@
+====================================================================
+SEZNAM ZDROJŮ A REFERENCÍ - Wall-E (4. Ročník)
+====================================================================
+
+Tento soubor slouží jako podklad pro závěrečnou dokumentaci.
+Zapisuj sem všechny externí knihovny, repozitáře a návody.
+
+--------------------------------------------------------------------
+1. Vyčítání analogového tlaku z myši Logitech
+--------------------------------------------------------------------
+Zdroj:       GitHub Repozitář Mouse-Pressure
+Autor:       benmklein
+Odkaz:       https://github.com/benmklein/Mouse-Pressure
+Získáno:     3. října 2026
+Využití:     Kód z tohoto repozitáře posloužil pro reverzní inženýrství
+             protokolu Logitech HID++ 2.0. Zjistili jsme díky němu, jak 
+             myši (např. Logitech Superstrike) poslat inicializační "lease" 
+             a jak následně z USB (HID) paketu dekódovat surová 10bitová 
+             analogová data z magnetických spínačů tlačítek. Na základě 
+             tohoto principu byl vytvořen náš vlastní odlehčený Python 
+             skript (analog_mouse.py) pro Jetson Orin Nano, který řídí 
+             PWM motorů robota Wall-E.
+--------------------------------------------------------------------
