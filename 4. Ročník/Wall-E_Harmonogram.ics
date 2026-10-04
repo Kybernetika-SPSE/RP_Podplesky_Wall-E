@@ -1,0 +1,76 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Antigravity//Wall-E Maturita//CS
+BEGIN:VEVENT
+UID:walle-milestone-1@antigravity
+DTSTAMP:20261003T000000Z
+DTSTART;VALUE=DATE:20261029
+SUMMARY:Wall-E: Návrh a výroba mechanických částí
+DESCRIPTION:1. kontrolní bod maturitní práce.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upozornění: Za týden je termín na mechanické části Wall-Eho!
+TRIGGER:-P7D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:walle-milestone-2@antigravity
+DTSTAMP:20261003T000000Z
+DTSTART;VALUE=DATE:20261126
+SUMMARY:Wall-E: Sestavení hardwaru a prvotní testování
+DESCRIPTION:2. kontrolní bod maturitní práce. Podvozek a základní elektronika.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upozornění: Za týden je termín na sestavení hardwaru Wall-Eho!
+TRIGGER:-P7D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:walle-milestone-3@antigravity
+DTSTAMP:20261003T000000Z
+DTSTART;VALUE=DATE:20261217
+SUMMARY:Wall-E: Implementace řídicího systému a software
+DESCRIPTION:3. kontrolní bod maturitní práce. (Tady už máme díky dnešku náskok!)
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upozornění: Za týden je termín na software Wall-Eho!
+TRIGGER:-P7D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:walle-milestone-4@antigravity
+DTSTAMP:20261003T000000Z
+DTSTART;VALUE=DATE:20270128
+SUMMARY:Wall-E: Celková kompletace a spuštění
+DESCRIPTION:4. kontrolní bod maturitní práce. Všechno dohromady.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upozornění: Za týden je termín na kompletaci Wall-Eho!
+TRIGGER:-P7D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:walle-milestone-5@antigravity
+DTSTAMP:20261003T000000Z
+DTSTART;VALUE=DATE:20270225
+SUMMARY:Wall-E: Finální testování a dokumentace
+DESCRIPTION:5. kontrolní bod maturitní práce. Psaní technické zprávy.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upozornění: Za týden je termín na odevzdání dokumentace k Wall-Emu!
+TRIGGER:-P7D
+END:VALARM
+END:VEVENT
+BEGIN:VEVENT
+UID:walle-deadline@antigravity
+DTSTAMP:20261003T000000Z
+DTSTART;VALUE=DATE:20270409
+SUMMARY:Wall-E: ODEVZDÁNÍ MATURITNÍ PRÁCE 🚨
+DESCRIPTION:Finální termín odevzdání maturitní práce - model robota Wall-E.
+BEGIN:VALARM
+ACTION:DISPLAY
+DESCRIPTION:Upozornění: ODEVZDÁNÍ MATURITNÍ PRÁCE ZA 14 DNÍ!
+TRIGGER:-P14D
+END:VALARM
+END:VEVENT
+END:VCALENDAR

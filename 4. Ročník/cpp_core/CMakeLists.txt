@@ -12,6 +12,7 @@ include_directories(include ${HIDAPI_INCLUDE_DIRS})
 add_executable(walle_controller
     src/main.cpp
     src/motor.cpp
+    src/encoder.cpp
 )
 
 target_link_libraries(walle_controller ${HIDAPI_LIBRARIES} pthread)
