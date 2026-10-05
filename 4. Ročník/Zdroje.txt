@@ -21,3 +21,20 @@ Využití:     Kód z tohoto repozitáře posloužil pro reverzní inženýrstv�
              skript (analog_mouse.py) pro Jetson Orin Nano, který řídí 
              PWM motorů robota Wall-E.
 --------------------------------------------------------------------
+2. 3D Model: DC-DC LM2596 Step-Down Měnič
+--------------------------------------------------------------------
+Zdroj:       GrabCAD
+Odkaz:       https://grabcad.com/library/dc-dc-lm2596-3a-step-down-converter-module-1
+Získáno:     5. října 2026
+Využití:     3D model (STEP) pro přesný návrh plastového šasi (Box 2) 
+             a fyzické rozložení napájecí elektroniky robota.
+--------------------------------------------------------------------
+
+3. 3D Model: BTS7960 43A Motor Driver
+--------------------------------------------------------------------
+Zdroj:       GrabCAD
+Odkaz:       https://grabcad.com/library/bts7960-43a-high-power-h-bridge-module-2
+Získáno:     5. října 2026
+Využití:     3D model (STEP) pro návrh úchytů, vnitřního rozložení 
+             šasi a přípravu chlazení (Wind Tunnel) pro H-můstky.
+--------------------------------------------------------------------
