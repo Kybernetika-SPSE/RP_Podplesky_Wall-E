@@ -1,0 +1,6 @@
+NÁPADY A BUDOUCÍ FUNKCE PRO WALL-E
+==================================
+
+1. Záznam a ukládání tras (Odometrie / Telemetrie):
+   - Ukládat projeté cesty (data z enkodérů motorů, popř. IMU/kamery) do logu.
+   - Využití: Zpětné přehrávání projeté trasy, autonomní návrat domů, nebo mapování terénu.
