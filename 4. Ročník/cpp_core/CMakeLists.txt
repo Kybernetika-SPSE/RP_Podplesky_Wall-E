@@ -16,3 +16,8 @@ add_executable(walle_controller
 )
 
 target_link_libraries(walle_controller ${HIDAPI_LIBRARIES} pthread)
+
+add_executable(test_mouse
+    src/test_mouse.cpp
+)
+target_link_libraries(test_mouse pthread)
