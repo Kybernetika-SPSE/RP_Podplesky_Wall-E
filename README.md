@@ -1,4 +1,4 @@
-# WALL-E Replica – Výroba a řízení modelu robota
+# WALL-E Replika – Výroba a řízení modelu robota
 
 Tento repozitář obsahuje kompletní podklady pro návrh, mechanickou stavbu, návrh elektroniky a vývoj řídicího softwaru funkční repliky robota **WALL-E**. Projekt vzniká na **VOŠ a SPŠE Plzeň** v rámci studijního oboru *Technické lyceum (78-42-M/01)*.
 
@@ -32,7 +32,7 @@ Vývoj projektu je rozdělen do dvou hlavních etap podle studijních ročníků
 * **Podvozek:** Nezávisle odpružený pásový systém s mechanismem napínání pásů pro spolehlivý přenos točivého momentu v terénu.
 * **3D data:** CAD modely a výkresová dokumentace v Autodesk Inventor / formátech STEP, DWG a STL.
 
-### 2. Výpočetní jednotka (Mozek)
+### 2. Výpočetní jednotka
 * **Hardware:** **NVIDIA Jetson Orin Nano**
 * **Úloha:** Zpracování vstupních periferií v reálném čase, generování řídicích signálů pro budiče motorů, plánovaná telemetrie/odometrie a autonomní funkce.
 
@@ -88,13 +88,3 @@ Wall-E/
 
 ---
 
-## 📅 Harmonogram a milníky DMP (4. ročník)
-
-| Fáze | Milník | Termín |
-| :--- | :--- | :--- |
-| **1.** | Návrh a výroba mechanických částí robota | 29. 10. 2026 |
-| **2.** | Sestavení hardwaru a prvotní testování podvozku | 26. 11. 2026 |
-| **3.** | Implementace řídicího systému a vývoj softwaru | 17. 12. 2026 |
-| **4.** | Celková kompletace modelu a spuštění elektroniky | 28. 01. 2027 |
-| **5.** | Finální testování systému a vypracování technické dokumentace | 25. 02. 2027 |
-| 🏁 | **Oficiální termín odevzdání práce** | **09. 04. 2027** |
