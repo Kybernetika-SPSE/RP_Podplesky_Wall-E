@@ -108,11 +108,19 @@ Deska prošla kompletním přepracováním po připomínkách vedoucího práce 
 
 ### C. Mechanické uspořádání, podvozek a chlazení
 
-#### 1. Koncepce pásového podvozku (Nový mechanický návrh)
+#### 1. Koncepce pásového podvozku (Detailní mechanický návrh)
 * **Pohon a hnací kolo:**
-  * Hnací kolo je umístěno **nahoře** (vrchol trojúhelníkového profilu pásu).
-  * Motor je uložen v trupu pod hnacím kolem; točivý moment je na hnací hřídel přenášen **řetězovým převodem**.
-  * Výhoda: Motor i hnací hřídel jsou chráněny uvnitř šasi; propružení spodních kol nemění osovou vzdálenost motoru a kola.
+  * Hnací kolo je umístěno **nahoře** (vrchol trojúhelníkového profilu pásu, průměr kola $D = 104\text{ mm}$, šířka 25 mm).
+  * **Motor:** Pololu 37D s převodovkou 100:1 (100 ot/min při 12 V, točivý moment 3,3 Nm, 6mm D-hřídel).
+  * **Převodový poměr:** Přímý převod **1:1** realizovaný **uzavřeným ozubeným řemenem GT2** (12–14 zubů).
+  * **Rychlost a tah:** Výsledná rychlost robota je **0,55 m/s (cca 2,0 km/h)**; motory poskytují na pásech **souhrnný tah cca 13 kg**.
+* **Integrovaná řemenice v těle kola (Monolit z ASA):**
+  * Z boku 25mm hnacího kola je přímo vymodelováno (extrudováno) ozubení pro 6mm řemen GT2 o šířce 7 mm. Celková šířka monolitu je **32 mm**.
+  * Výhoda: Odpadá samostatná hliníková řemenice, červíky a riziko protočení na hřídeli; síla motoru se přenáší přímo do těla kola.
+* **100% vystředění pásu v ose podvozku:**
+  * Mezi vnějšími trojúhelníkovými pláty je rozteč **80 mm**. Osa pásu leží přesně uprostřed na kótě **40,0 mm**.
+  * Hnací kolo (25 mm) sedí symetricky od 27,5 mm do 52,5 mm.
+  * U-blok nesoucí ložiska a vodicí tyče má vnitřní dutinu 38 mm a asymetrické stěny (vlevo 27,5 mm, vpravo 20,5 mm), což umožňuje elegantně pojmout integrovanou řemenici bez jakéhokoliv vyosení pásu.
 * **Odpružení krajních vodných kol (Přední a zadní idler):**
   * Uložena na **L-ramenech (Bellcrank)** s otočným čepem v ohybu L (uprostřed).
   * Geometrie trajektorie: Kolo se při propružení vytáčí **po oblouku nahoru a do boku (ven)**, čímž kinematicky kompenzuje změnu obvodu a zabraňuje spadnutí pásu.
@@ -167,6 +175,9 @@ Deska prošla kompletním přepracováním po připomínkách vedoucího práce 
 - [x] Odeslání všech změn na GitHub (`origin/master` je plně synchronní).
 - [x] Vytvoření testovacích nástrojů pro myš v Pythonu i C++.
 - [x] Výběr nákupu komponent (128GB microSD karta třídy A2/V30, ASA filament, 20A autopojistka, 4010 ventilátor).
+- [x] Výpočet převodového poměru a rychlosti robota (převod 1:1, GT2 řemen, 0,55 m/s, 13 kg tah).
+- [x] Vyřešena geometrie vystředění pásu na kótě 40,0 mm s integrovanou řemenicí v těle kola a asymetrickým U-blokem.
+- [x] Vytvoření sady GitHub Copilot pravidel a specializovaných promptních skillů (`.github/copilot-instructions.md`, `pid_controller`, `mouse_teleop`, `odometry_logger`).
 
 ### Co zbývá udělat (TODO):
 1. **Zprovoznění Jetsonu (OS JetPack):**
