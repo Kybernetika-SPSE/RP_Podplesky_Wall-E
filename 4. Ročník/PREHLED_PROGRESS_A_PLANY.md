@@ -106,8 +106,23 @@ Deska prošla kompletním přepracováním po připomínkách vedoucího práce 
 * **Mechanické otvory:**
   * 4x montážní otvor M2 (`MountingHole_2.2mm_M2`) pro připevnění na mosazné distanční sloupky.
 
-### C. Mechanické uspořádání a chlazení (Box 2 – Engine Room)
-* **Koncepce:** Větrný tunel pod podvozkem robota.
+### C. Mechanické uspořádání, podvozek a chlazení
+
+#### 1. Koncepce pásového podvozku (Nový mechanický návrh)
+* **Pohon a hnací kolo:**
+  * Hnací kolo je umístěno **nahoře** (vrchol trojúhelníkového profilu pásu).
+  * Motor je uložen v trupu pod hnacím kolem; točivý moment je na hnací hřídel přenášen **řetězovým převodem**.
+  * Výhoda: Motor i hnací hřídel jsou chráněny uvnitř šasi; propružení spodních kol nemění osovou vzdálenost motoru a kola.
+* **Odpružení krajních vodných kol (Přední a zadní idler):**
+  * Uložena na **L-ramenech (Bellcrank)** s otočným čepem v ohybu L (uprostřed).
+  * Geometrie trajektorie: Kolo se při propružení vytáčí **po oblouku nahoru a do boku (ven)**, čímž kinematicky kompenzuje změnu obvodu a zabraňuje spadnutí pásu.
+  * Tlumiče jsou napojeny na vnitřní rameno L uvnitř trupu.
+* **Spodní pojezdová dvoukolí (Bogie systém):**
+  * Spodní běhoun je tvořen **3 dvoukolími** (celkem 6 pojezdových rolen na každé straně).
+  * Každé dvoukolí má centrální otočný čep na tyčce/vahadle (kopírování mikronerovností) a celé je zavěšeno na odpruženém L-rameni napojeném na tlumič.
+
+#### 2. Uspořádání elektroniky a chlazení (Box 2 – Engine Room)
+* **Koncepce:** Větrný aerodynamický tunel pod podvozkem robota.
 * **Uspořádání:**
   * Modul měniče LM2596 je instalován vertikálně **pod** deskou Power Hubu.
   * Po stranách jsou umístěny drivery BTS7960 s mohutnými hliníkovými chladiči.
