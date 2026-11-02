@@ -47,10 +47,15 @@ Vývoj projektu je rozdělen do dvou hlavních etap podle studijních ročníků
 * **Akumulátory:** Duální bateriový subsystém (Li-Po 3S).
 
 ### 5. Řídicí software a ovládání
-* **Protokol ovládání:** Dálkové řízení bezdrátovou myší Logitech s využitím reverzního inženýrství protokolu **Logitech HID++ 2.0**. Z USB/HID reportů jsou v reálném čase vyčítána 10bitová surová data přítlaku magnetických spínačů tlačítek.
-* **Implementace:**
-  * Prototypové skripty v Pythonu ([`analog_mouse.py`](./4.%20Ročník/analog_mouse.py), [`test_mouse.py`](./4.%20Ročník/test_mouse.py)) pro ověření HID komunikace.
-  * Výkonové jádro v C++ ([`cpp_core/`](./4.%20Ročník/cpp_core/)) využívající Linux `evdev` rozhraní pro minimální latenci a plynulý náběh výkonu motorů (Smooth Start/Stop).
+* **Primární ovládání:** Bezdrátová myš Logitech s protokolem **Logitech HID++ 2.0**. Z USB/HID reportů se čte přítlak analogových tlačítek.
+* **Záložní ovládání:** Pokud při spuštění není dostupný HID dongle myši, program hledá připojený DualSense. Ovladač musí být s Jetsonem předem spárovaný a připojený přes Bluetooth.
+  * Levý thumbstick ovládá levý pás, pravý thumbstick pravý pás; pohyb nahoru jede dopředu a dolů dozadu.
+  * Změny rychlosti z thumbsticků se omezují plynulým rozjezdem a brzděním.
+  * L2 otáčí doleva, R2 doprava; rychlost otáčení odpovídá míře stisknutí triggeru.
+  * Šipka nahoru/dolů na směrovém kříži při držení rozjíždí robota rovně dopředu/dozadu; po puštění rychlost plynule klesá k nule.
+  * Současné stisknutí Create a Options zastaví motory; stejná kombinace ovládání znovu aktivuje.
+  * Při odpojení aktivního ovladače se vstupy vynulují a motory okamžitě zastaví.
+* **Implementace:** Řídicí jádro v C++ ([`cpp_core/`](./4.%20Ročník/cpp_core/)) automaticky detekuje vstupy přes Linux `evdev`; myš má před DualSense přednost. Pythonové skripty ([`analog_mouse.py`](./4.%20Ročník/analog_mouse.py), [`test_mouse.py`](./4.%20Ročník/test_mouse.py)) slouží k prototypování a diagnostice myši.
 
 ---
 
@@ -87,4 +92,3 @@ Wall-E/
 ```
 
 ---
-

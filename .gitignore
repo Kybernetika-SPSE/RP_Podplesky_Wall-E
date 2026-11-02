@@ -13,10 +13,23 @@ Makefile
 __pycache__/
 *.pyc
 
-# Autodesk Inventor
+# 3D CAD Modely (STEP, STL, Inventor)
+*.step
+*.STEP
+*.stp
+*.STP
+*.stl
+*.STL
+*.ipt
+*.iam
+*.dwg
+*.bak
+
+# Autodesk Inventor & KiCad temp
 OldVersions/
 *.lok
 *.ipj.lnk
+*.lck
 
 # System
 .DS_Store
