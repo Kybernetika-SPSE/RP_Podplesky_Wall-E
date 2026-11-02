@@ -112,11 +112,18 @@ Deska prošla kompletním přepracováním po připomínkách vedoucího práce 
 * **Pohon a hnací kolo:**
   * Hnací kolo je umístěno **nahoře** (vrchol trojúhelníkového profilu pásu, průměr kola $D = 104\text{ mm}$, šířka 25 mm).
   * **Motor:** Pololu 37D s převodovkou 100:1 (100 ot/min při 12 V, točivý moment 3,3 Nm, 6mm D-hřídel).
-  * **Převodový poměr:** Přímý převod **1:1** realizovaný **uzavřeným ozubeným řemenem GT2** (12–14 zubů).
+  * **Převodový stupeň motor–hnací kolo:** Uvažuje se uzavřený řemen **Gates PowerGrip GT2 2MR-100-09** (100 mm, rozteč 2 mm, šířka 9 mm) a dvě 16zubé řemenice. Délku a geometrii dráhy řemenu je nutné znovu ověřit pro výkyvné uložení; dřívější odhad osové vzdálenosti 34 mm platil jen pro dvě pevné řemenice bez napínání.
+  * Kvůli nedostatku místa se zvažuje motor umístěný svisle dolů a dvojice kuželových kol (*mitre gears*) s převodem **1:1**, která otočí směr pohonu o 90°.
+  * První nastavení generátoru kuželových kol je **17/17 zubů, modul 0,30 mm, tlakový úhel 14,5°**; jde pouze o zkušební geometrii, modul je třeba zvětšit a převod dimenzovat pro zatížení před použitím.
   * **Rychlost a tah:** Výsledná rychlost robota je **0,55 m/s (cca 2,0 km/h)**; motory poskytují na pásech **souhrnný tah cca 13 kg**.
 * **Integrovaná řemenice v těle kola (Monolit z ASA):**
-  * Z boku 25mm hnacího kola je přímo vymodelováno (extrudováno) ozubení pro 6mm řemen GT2 o šířce 7 mm. Celková šířka monolitu je **32 mm**.
+  * Z boku hnacího kola je přímo vymodelována řemenice GT2 jako součást jednoho dílu; ozubení je určené pro 9mm řemen. Nastavení generátoru: **16 zubů, otvor 6 mm, šířka řemenu 9 mm, výška vodicí příruby 1,5 mm**. Rozměr otvoru generátoru je nutné sladit s osou a ložisky v konečné geometrii.
   * Výhoda: Odpadá samostatná hliníková řemenice, červíky a riziko protočení na hřídeli; síla motoru se přenáší přímo do těla kola.
+* **Napínání řemenu a pásu:**
+  * Aktuálně se navrhuje výkyvný pohonný modul nesoucí motor, kuželová kola a výstupní řemenici. Pružina má otáčet celým modulem tak, aby se řemenice odtahovala od hnacího kola a napínala GT2 řemen; samostatná kladka se v této koncepci nepředpokládá.
+  * Kuželová kola, jejich hřídele a uložení se musí pohybovat jako jeden modul, aby se při výkyvu nezměnila jejich vzájemná poloha. Osa výstupní řemenice musí být rovnoběžná s osou hnacího kola.
+  * Dřívější koncepce posuvného motoru po liště je nahrazena tímto výkyvným modulem. Napínání pásu podvozku a způsob zajištění pohonného modulu je třeba dokončit v CADu.
+  * V rané verzi držáku byla navržena vůle přibližně **1 mm** mezi stěnou držáku a hnacím kolem i mezi protější stěnou a řemenicí; vůli je nutné ověřit po celé dráze pohybu.
 * **100% vystředění pásu v ose podvozku:**
   * Mezi vnějšími trojúhelníkovými pláty je rozteč **80 mm**. Osa pásu leží přesně uprostřed na kótě **40,0 mm**.
   * Hnací kolo (25 mm) sedí symetricky od 27,5 mm do 52,5 mm.
@@ -177,6 +184,7 @@ Deska prošla kompletním přepracováním po připomínkách vedoucího práce 
 - [x] Výběr nákupu komponent (128GB microSD karta třídy A2/V30, ASA filament, 20A autopojistka, 4010 ventilátor).
 - [x] Výpočet převodového poměru a rychlosti robota (převod 1:1, GT2 řemen, 0,55 m/s, 13 kg tah).
 - [x] Vyřešena geometrie vystředění pásu na kótě 40,0 mm s integrovanou řemenicí v těle kola a asymetrickým U-blokem.
+- [ ] Dokončit a ověřit mechanický návrh ve Fusion 360: výkyvný pohonný modul s kuželovým převodem, napínání GT2 řemenu, zajištění napnutí pásu, souosost a vůle v celém rozsahu pohybu.
 - [x] Vytvoření sady GitHub Copilot pravidel a specializovaných promptních skillů (`.github/copilot-instructions.md`, `pid_controller`, `mouse_teleop`, `odometry_logger`).
 
 ### Co zbývá udělat (TODO):
@@ -185,6 +193,9 @@ Deska prošla kompletním přepracováním po připomínkách vedoucího práce 
    * Spustit Jetson s monitorem a klávesnicí, projít úvodním nastavením Ubuntu (uživatel `tomas`, nastavení sítě a SSH).
    * Otestovat USB myš pomocí `test_mouse.py`.
 2. **Dokončení mechaniky ve Fusion 360 (Box 2):**
+   * Dokončit CAD výkyvného pohonného modulu s motorem svisle dolů, kuželovým převodem 1:1 a pružinovým napínáním GT2 řemenu.
+   * Zvětšit a ověřit modul kuželových kol, ověřit geometrii a napnutí řemenu v krajních polohách modulu a určit způsob napínání a zajištění pásu podvozku.
+   * Ověřit pevnost a únosnost 9mm GT2 řemenu a tištěných řemenic pro zatížení pohonu; návrhová geometrie sama o sobě únosnost nepotvrzuje.
    * Doplnit montážní otvory pro distanční sloupky M2.
    * Vymodelovat kabelové průchodky a úchyty pro 4010 ventilátor (otvory 2.8 mm pro samořezné M3 šrouby).
    * Vyexportovat STL/STEP a naslicovat pro tisk z ASA.
