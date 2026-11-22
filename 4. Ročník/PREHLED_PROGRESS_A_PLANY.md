@@ -191,6 +191,9 @@ Deska prošla kompletním přepracováním po připomínkách vedoucího práce 
 - [ ] Prototypovat spodní podpěrná kolečka nejprve jako pevná; podle zkoušek rozhodnout, zda je nutné odpružení nebo kývavé dvojice.
 - [x] Vytvoření sady GitHub Copilot pravidel a specializovaných promptních skillů (`.github/copilot-instructions.md`, `pid_controller`, `mouse_teleop`, `odometry_logger`).
 
+### Aktuálně probíhá:
+- [ ] Dokončování CAD modelů pro elektroniku; modely jsou téměř hotové. Před uzavřením návrhu ověřit jejich umístění, uchycení a kolize v sestavě.
+
 ### Co zbývá udělat (TODO):
 1. **Zprovoznění Jetsonu (OS JetPack):**
    * Vypálit stažený JetPack SD Card Image na 128GB microSD kartu (přes BalenaEtcher).
