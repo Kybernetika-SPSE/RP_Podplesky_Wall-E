@@ -15,6 +15,7 @@ add_executable(walle_controller
     src/gpio_line.cpp
     src/motor.cpp
     src/encoder.cpp
+    src/web_debug.cpp
 )
 
 target_link_libraries(walle_controller ${HIDAPI_LIBRARIES} pthread)

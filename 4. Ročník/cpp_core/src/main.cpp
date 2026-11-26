@@ -26,6 +26,7 @@
 #include "encoder.h"
 #include "motor.h"
 #include "pins.h"
+#include "web_debug.h"
 
 namespace fs = std::filesystem;
 
@@ -650,6 +651,69 @@ void handle_dualsense_key(const input_event& event, DualSenseProfile profile) {
     }
 }
 
+float byte_to_stick(std::uint8_t raw) {
+    const float normalized = (127.5f - static_cast<float>(raw)) / 127.5f;
+    const float clamped = std::clamp(normalized, -1.0f, 1.0f);
+    return std::abs(clamped) < STICK_DEADZONE ? 0.0f : clamped;
+}
+
+std::string find_dualsense_hidraw_bt() {
+    std::error_code ec;
+    if (!fs::exists("/sys/class/hidraw", ec)) return {};
+    for (const auto& entry : fs::directory_iterator("/sys/class/hidraw", ec)) {
+        const std::string name = entry.path().filename().string();
+        if (name.rfind("hidraw", 0) != 0) continue;
+        std::ifstream uev(entry.path() / "device/uevent");
+        std::string line;
+        while (std::getline(uev, line)) {
+            if (line.rfind("HID_ID=", 0) == 0) {
+                unsigned int bus = 0, vid = 0, pid = 0;
+                if (std::sscanf(line.c_str() + 7, "%x:%x:%x", &bus, &vid, &pid) == 3) {
+                    if (bus == 0x0005 && vid == 0x054C && (pid == 0x0CE6 || pid == 0x0DF2)) {
+                        return "/dev/" + name;
+                    }
+                }
+            }
+        }
+    }
+    return {};
+}
+
+void parse_dualsense_bt_report31(const std::uint8_t* buf, ssize_t len) {
+    // Sony DualSense Enhanced Bluetooth Input Report 0x31 (78 bytes)
+    if (len < 11 || buf[0] != 0x31) return;
+
+    ds_left_stick_x.store(byte_to_stick(buf[2]));
+    ds_left_stick_y.store(byte_to_stick(buf[3]));
+    ds_right_stick_x.store(byte_to_stick(buf[4]));
+    ds_right_stick_y.store(byte_to_stick(buf[5]));
+    ds_left_trigger.store(static_cast<float>(buf[6]) / 255.0f);
+    ds_right_trigger.store(static_cast<float>(buf[7]) / 255.0f);
+
+    const std::uint8_t hat = buf[9] & 0x0F;
+    ds_dpad_up.store(hat == 0 || hat == 1 || hat == 7);
+    ds_dpad_right.store(hat == 1 || hat == 2 || hat == 3);
+    ds_dpad_down.store(hat == 3 || hat == 4 || hat == 5);
+    ds_dpad_left.store(hat == 5 || hat == 6 || hat == 7);
+
+    const std::uint8_t b1 = buf[10];
+    const bool r1 = (b1 & 0x02) != 0;
+    const bool was_r1 = ds_r1_pressed.exchange(r1);
+    if (r1 && !was_r1) {
+        cruise_toggle_seq.fetch_add(1);
+    }
+
+    const bool create = (b1 & 0x10) != 0;
+    const bool options = (b1 & 0x20) != 0;
+    ds_create_pressed.store(create);
+    ds_options_pressed.store(options);
+    const bool chord = create && options;
+    const bool was_chord = ds_stop_chord_active.exchange(chord);
+    if (chord && !was_chord) {
+        estop_toggle_seq.fetch_add(1);
+    }
+}
+
 void input_thread() {
     const bool hid_initialized = (hid_init() == 0);
     if (!hid_initialized) {
@@ -659,10 +723,12 @@ void input_thread() {
     hid_device* hid = nullptr;
     OpenInputDevice mouse;
     OpenInputDevice dualsense;
+    int ds_bt_hidraw_fd = -1;
     auto next_probe = std::chrono::steady_clock::now();
     auto next_presence_check = next_probe;
     auto last_lease = next_probe - std::chrono::seconds(10);
     unsigned char buffer[64]{};
+    std::uint8_t ds_raw_buf[128]{};
 
     while (g_running.load()) {
         const auto now = std::chrono::steady_clock::now();
@@ -681,6 +747,10 @@ void input_thread() {
                     ::close(dualsense.fd);
                     dualsense = {};
                 }
+                if (ds_bt_hidraw_fd >= 0) {
+                    ::close(ds_bt_hidraw_fd);
+                    ds_bt_hidraw_fd = -1;
+                }
                 if (mouse.fd < 0) mouse = find_mouse_event();
                 set_input_mode(InputMode::Mouse);
             } else {
@@ -697,6 +767,16 @@ void input_thread() {
                 if (newly_connected) {
                     update_dualsense_axes(dualsense.fd, dualsense.ds_profile);
                 }
+                if (dualsense.fd >= 0 && dualsense.ds_profile == DualSenseProfile::HidGeneric &&
+                    ds_bt_hidraw_fd < 0) {
+                    const std::string bt_path = find_dualsense_hidraw_bt();
+                    if (!bt_path.empty()) {
+                        ds_bt_hidraw_fd = ::open(bt_path.c_str(), O_RDONLY | O_NONBLOCK);
+                        if (ds_bt_hidraw_fd >= 0) {
+                            std::cout << "[DUALSENSE] Aktivní BT hidraw 0x31 vstup (" << bt_path << ")\n";
+                        }
+                    }
+                }
             }
             next_probe = now + std::chrono::seconds(1);
         }
@@ -707,6 +787,10 @@ void input_thread() {
                 std::cerr << "[VSTUP] DualSense odpojen — zastavuji motory.\n";
                 ::close(dualsense.fd);
                 dualsense = {};
+                if (ds_bt_hidraw_fd >= 0) {
+                    ::close(ds_bt_hidraw_fd);
+                    ds_bt_hidraw_fd = -1;
+                }
                 set_input_mode(InputMode::None);
                 next_probe = now;
             }
@@ -755,6 +839,23 @@ void input_thread() {
         }
 
         const InputMode mode = input_mode.load();
+        if (mode == InputMode::DualSense && ds_bt_hidraw_fd >= 0) {
+            for (int i = 0; i < 64; ++i) {
+                const ssize_t n = ::read(ds_bt_hidraw_fd, ds_raw_buf, sizeof(ds_raw_buf));
+                if (n > 0) {
+                    if (ds_raw_buf[0] == 0x31) {
+                        parse_dualsense_bt_report31(ds_raw_buf, n);
+                    }
+                } else if (n == 0 || (n < 0 && errno != EAGAIN && errno != EWOULDBLOCK && errno != EINTR)) {
+                    ::close(ds_bt_hidraw_fd);
+                    ds_bt_hidraw_fd = -1;
+                    break;
+                } else {
+                    break;
+                }
+            }
+        }
+
         const int active_fd = (mode == InputMode::Mouse) ? mouse.fd
                             : (mode == InputMode::DualSense ? dualsense.fd : -1);
         if (active_fd >= 0) {
@@ -805,6 +906,7 @@ void input_thread() {
     if (hid) hid_close(hid);
     if (mouse.fd >= 0) ::close(mouse.fd);
     if (dualsense.fd >= 0) ::close(dualsense.fd);
+    if (ds_bt_hidraw_fd >= 0) ::close(ds_bt_hidraw_fd);
     if (hid_initialized) hid_exit();
 }
 
@@ -836,6 +938,13 @@ int main(int argc, char** argv) {
     right_motor.begin(dry_run);
     left_encoder.begin(dry_run);
     right_encoder.begin(dry_run);
+
+    std::atomic<bool> enc_reset_requested{false};
+    WebDebugServer web_debug(
+        8080,
+        []() { estop_toggle_seq.fetch_add(1); },
+        [&]() { enc_reset_requested.store(true); });
+    web_debug.start();
 
     DualSenseFeedback ds_feedback;
     std::thread input(input_thread);
@@ -1107,6 +1216,38 @@ int main(int argc, char** argv) {
             ds_feedback.apply(r2_fx, l2_fx, rl, rr, rgb, player_mask);
         }
 
+        if (enc_reset_requested.exchange(false)) {
+            left_encoder.clearCount();
+            right_encoder.clearCount();
+        }
+
+        TelemetrySnapshot telem;
+        telem.mode = (mode == InputMode::Mouse) ? "SUPERSTRIKE"
+                   : (mode == InputMode::DualSense ? "DUALSENSE" : "NONE");
+        telem.dry_run = dry_run;
+        telem.controls_enabled = controls_enabled;
+        telem.cruise_active = cruise_active;
+        telem.cruise_speed = cruise_speed;
+        telem.left_pwm = left_motor.getSpeed();
+        telem.right_pwm = right_motor.getSpeed();
+        telem.enc_left = left_encoder.getCount();
+        telem.enc_right = right_encoder.getCount();
+        telem.lx = lx;
+        telem.ly = ly;
+        telem.rx = ds_right_stick_x.load();
+        telem.ry = ry;
+        telem.l2 = l2;
+        telem.r2 = r2;
+        telem.dpad_up = d_up;
+        telem.dpad_down = d_dn;
+        telem.dpad_left = d_lt;
+        telem.dpad_right = d_rt;
+        telem.r1 = ds_r1_pressed.load();
+        telem.ss_left_raw = ss_left_raw.load();
+        telem.ss_right_raw = ss_right_raw.load();
+        telem.ss_dir = ss_direction_mode.load();
+        web_debug.updateTelemetry(telem);
+
         if (dry_run && (now - last_status_log >= std::chrono::milliseconds(500))) {
             last_status_log = now;
             std::cout << "[DRY-RUN] L=" << left_motor.getSpeed()
@@ -1121,6 +1262,7 @@ int main(int argc, char** argv) {
     }
 
     std::cout << "\n[SHUTDOWN] Zastavuji motory a uvolňuji ovladač...\n";
+    web_debug.stop();
     left_motor.shutdown();
     right_motor.shutdown();
     left_encoder.shutdown();
