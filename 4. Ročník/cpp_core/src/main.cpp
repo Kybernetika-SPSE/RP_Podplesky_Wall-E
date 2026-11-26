@@ -18,6 +18,7 @@
 
 #include <fcntl.h>
 #include <hidapi/hidapi.h>
+#include <linux/hidraw.h>
 #include <linux/input.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
@@ -223,6 +224,7 @@ private:
     std::uint8_t pulse_l = 0;
     std::uint8_t pulse_r = 0;
 
+    bool bt_enhanced_init_done = false;
     bool has_last_state = false;
     TriggerFx last_r2{};
     TriggerFx last_l2{};
@@ -237,6 +239,7 @@ private:
 
         hid_path.clear();
         is_bluetooth = false;
+        bt_enhanced_init_done = false;
         std::error_code ec;
         if (fs::exists("/sys/class/hidraw", ec)) {
             for (const auto& entry : fs::directory_iterator("/sys/class/hidraw", ec)) {
@@ -375,6 +378,23 @@ public:
 
             const int fd = ::open(hid_path.c_str(), O_RDWR | O_NONBLOCK);
             if (fd >= 0) {
+                // On hid-generic (Jetson kernel 5.15), DualSense over Bluetooth stays in
+                // Basic HID mode and ignores 0x31 output reports until Feature Report 0x05
+                // (41 bytes calibration) is read once to switch it into Enhanced BT mode.
+                if (is_bluetooth && !bt_enhanced_init_done) {
+                    std::array<std::uint8_t, 41> feat{};
+                    feat[0] = 0x05;
+                    (void)::ioctl(fd, HIDIOCGFEATURE(feat.size()), feat.data());
+                    bt_enhanced_init_done = true;
+                }
+
+                if (!has_sysfs_leds) {
+                    // Ensure lightbar is enabled at full brightness on hid-generic
+                    common[38] = 0x02;  // valid_flag2: lightbar setup
+                    common[41] = 0x02;  // DS_OUTPUT_LIGHTBAR_SETUP_LIGHT_OUT
+                    common[42] = 0x00;  // led_brightness: 0x00 = HIGH
+                }
+
                 if (!is_bluetooth) {
                     std::array<std::uint8_t, 48> pkt{};
                     pkt[0] = 0x02;
