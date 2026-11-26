@@ -2,8 +2,9 @@ cmake_minimum_required(VERSION 3.10)
 project(WallECppController)
 
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Najdi knihovnu hidapi pro komunikaci s myší
+# Najdi knihovnu hidapi pro komunikaci s myší Logitech Superstrike
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(HIDAPI REQUIRED hidapi-hidraw)
 
@@ -11,6 +12,7 @@ include_directories(include ${HIDAPI_INCLUDE_DIRS})
 
 add_executable(walle_controller
     src/main.cpp
+    src/gpio_line.cpp
     src/motor.cpp
     src/encoder.cpp
 )

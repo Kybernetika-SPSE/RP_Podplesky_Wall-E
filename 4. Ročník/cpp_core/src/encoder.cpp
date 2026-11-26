@@ -1,102 +1,85 @@
 #include "encoder.h"
-#include <iostream>
-#include <fstream>
-#include <fcntl.h>
-#include <unistd.h>
-#include <poll.h>
 
-Encoder::Encoder(int pin_a, int pin_b) : pinA(pin_a), pinB(pin_b), count(0), running(false) {
-    gpioPathA = "/sys/class/gpio/gpio" + std::to_string(pinA);
-    gpioPathB = "/sys/class/gpio/gpio" + std::to_string(pinB);
-}
+#include <iostream>
+
+#include <linux/gpio.h>
+#include <poll.h>
+#include <unistd.h>
+
+Encoder::Encoder(std::string enc_label, std::string line_a, std::string line_b)
+    : label(std::move(enc_label)),
+      lineNameA(std::move(line_a)),
+      lineNameB(std::move(line_b)) {}
 
 Encoder::~Encoder() {
-    running = false;
-    if (isrThread.joinable()) {
-        isrThread.join();
-    }
+    shutdown();
 }
 
-bool Encoder::writeSysfs(const std::string& path, const std::string& value) {
-    std::ofstream file(path);
-    if (!file.is_open()) return false;
-    file << value;
+bool Encoder::begin(bool dry_run) {
+    shutdown();
+    count.store(0);
+
+    if (dry_run) {
+        std::cout << "[ENCODER " << label << "] DRY-RUN režim (A=" << lineNameA
+                  << ", B=" << lineNameB << ").\n";
+        return true;
+    }
+
+    const bool okA = gpioEventA.openBothEdges(lineNameA, "walle_" + label + "_enca");
+    const bool okB = gpioInputB.open(lineNameB, "walle_" + label + "_encb");
+    if (!okA || !okB) {
+        std::cerr << "[ENCODER " << label << "] CHYBA: Nepodařilo se otevřít GPIO linky "
+                  << lineNameA << " / " << lineNameB << ".\n";
+        gpioEventA.closeLine();
+        gpioInputB.closeLine();
+        return false;
+    }
+
+    running.store(true);
+    isrThread = std::thread(&Encoder::interruptRoutine, this);
+    std::cout << "[ENCODER " << label << "] Aktivní (A=" << lineNameA
+              << ", B=" << lineNameB << ").\n";
     return true;
 }
 
-std::string Encoder::readSysfs(const std::string& path) {
-    std::ifstream file(path);
-    std::string value;
-    if (file.is_open()) file >> value;
-    return value;
-}
-
-void Encoder::begin() {
-    // Export GPIOs
-    std::ofstream exportFile("/sys/class/gpio/export");
-    if (exportFile.is_open()) {
-        exportFile << pinA << std::endl;
-        exportFile << pinB << std::endl;
+void Encoder::shutdown() {
+    running.store(false);
+    if (isrThread.joinable()) {
+        isrThread.join();
     }
-
-    // Set directions to 'in'
-    writeSysfs(gpioPathA + "/direction", "in");
-    writeSysfs(gpioPathB + "/direction", "in");
-
-    // Set edge detection for pin A to 'both' (sledování náběžné i sestupné hrany)
-    writeSysfs(gpioPathA + "/edge", "both");
-
-    running = true;
-    count = 0;
-    
-    // Spuštění vlákna, které zachytává hardwarová přerušení (interrupts)
-    isrThread = std::thread(&Encoder::interruptRoutine, this);
+    gpioEventA.closeLine();
+    gpioInputB.closeLine();
 }
 
 void Encoder::interruptRoutine() {
-    std::string valuePathA = gpioPathA + "/value";
-    std::string valuePathB = gpioPathB + "/value";
-
-    int fdA = open(valuePathA.c_str(), O_RDONLY);
+    const int fdA = gpioEventA.getFd();
     if (fdA < 0) return;
 
-    struct pollfd pfd;
+    struct pollfd pfd {};
     pfd.fd = fdA;
-    pfd.events = POLLPRI; // Čekáme na hardwarové přerušení
+    pfd.events = POLLIN;
 
-    char buf[2];
-    
-    // Vyčištění bufferu před spuštěním
-    lseek(fdA, 0, SEEK_SET);
-    read(fdA, buf, sizeof(buf));
-
-    while (running) {
-        int ret = poll(&pfd, 1, 100); // Timeout 100ms pro možnost ukončení vlákna
-        
-        if (ret > 0 && (pfd.revents & POLLPRI)) {
-            // Došlo ke změně stavu na pinu A!
-            lseek(fdA, 0, SEEK_SET);
-            read(fdA, buf, sizeof(buf));
-            char valA = buf[0];
-
-            // Přečteme stav pinu B pro zjištění směru otáčení
-            std::string valB_str = readSysfs(valuePathB);
-            if (!valB_str.empty()) {
-                char valB = valB_str[0];
-                
-                // Kvadraturní logika: porovnání hrany A se stavem B
-                if (valA == valB) {
-                    count++;
-                } else {
-                    count--;
+    while (running.load()) {
+        const int ret = ::poll(&pfd, 1, 100);
+        if (ret > 0 && (pfd.revents & POLLIN)) {
+            struct gpioevent_data ev {};
+            const ssize_t n = ::read(fdA, &ev, sizeof(ev));
+            if (n == static_cast<ssize_t>(sizeof(ev))) {
+                const int valA = (ev.id == GPIOEVENT_EVENT_RISING_EDGE) ? 1 : 0;
+                const int valB = gpioInputB.getValue();
+                if (valB >= 0) {
+                    if (valA == valB) {
+                        count.fetch_add(1);
+                    } else {
+                        count.fetch_sub(1);
+                    }
                 }
             }
         }
     }
-    close(fdA);
 }
 
-long long Encoder::getCount() {
+long long Encoder::getCount() const {
     return count.load();
 }
 

@@ -1,65 +1,113 @@
 #include "motor.h"
-#include <iostream>
-#include <fstream>
-#include <cmath>
 
-Motor::Motor(int channel_l, int channel_r) {
-    pwmChannelL = channel_l;
-    pwmChannelR = channel_r;
-    
-    // Na Jetsonu se k hardwarovému PWM běžně přistupuje přes sysfs: /sys/class/pwm/pwmchipX
-    // Cesty si budete muset případně upravit podle toho, jaké piny na Jetsonu fyzicky použijete
-    pwmBasePathL = "/sys/class/pwm/pwmchip0/pwm" + std::to_string(pwmChannelL);
-    pwmBasePathR = "/sys/class/pwm/pwmchip0/pwm" + std::to_string(pwmChannelR);
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <iostream>
+
+Motor::Motor(std::string motor_label, std::string lpwm_line, std::string rpwm_line)
+    : label(std::move(motor_label)),
+      lineNameL(std::move(lpwm_line)),
+      lineNameR(std::move(rpwm_line)) {}
+
+Motor::~Motor() {
+    shutdown();
 }
 
-bool Motor::writeSysfs(const std::string& path, const std::string& filename, const std::string& value) {
-    std::ofstream file(path + "/" + filename);
-    if (!file.is_open()) return false;
-    file << value;
+bool Motor::begin(bool dry_run) {
+    shutdown();
+    dryRun = dry_run;
+    currentSpeed.store(0);
+
+    if (dryRun) {
+        std::cout << "[MOTOR " << label << "] DRY-RUN režim (LPWM=" << lineNameL
+                  << ", RPWM=" << lineNameR << ", SW PWM " << SW_PWM_FREQ_HZ << " Hz).\n";
+        return true;
+    }
+
+    const bool okL = gpioL.open(lineNameL, "walle_" + label + "_lpwm", 0);
+    const bool okR = gpioR.open(lineNameR, "walle_" + label + "_rpwm", 0);
+    if (!okL || !okR) {
+        std::cerr << "[MOTOR " << label << "] CHYBA: Nepodařilo se otevřít GPIO linky "
+                  << lineNameL << " / " << lineNameR
+                  << ". Motor zůstane vypnutý.\n";
+        gpioL.closeLine();
+        gpioR.closeLine();
+        return false;
+    }
+
+    running.store(true);
+    pwmThread = std::thread(&Motor::pwmLoop, this);
+    std::cout << "[MOTOR " << label << "] SW PWM aktivní (" << SW_PWM_FREQ_HZ
+              << " Hz, LPWM=" << lineNameL << ", RPWM=" << lineNameR << ").\n";
     return true;
 }
 
-void Motor::begin() {
-    // Export PWM (pokud už není)
-    std::ofstream exportFileL("/sys/class/pwm/pwmchip0/export");
-    if(exportFileL.is_open()) exportFileL << pwmChannelL;
-    
-    std::ofstream exportFileR("/sys/class/pwm/pwmchip0/export");
-    if(exportFileR.is_open()) exportFileR << pwmChannelR;
-
-    // Nastavení periody (v nanosekundách) - 20000000 ns = 50 Hz, 1000000 ns = 1kHz
-    writeSysfs(pwmBasePathL, "period", "1000000"); 
-    writeSysfs(pwmBasePathR, "period", "1000000");
-
-    writeSysfs(pwmBasePathL, "enable", "1");
-    writeSysfs(pwmBasePathR, "enable", "1");
-    
-    stop();
-}
-
 void Motor::setSpeed(int speed) {
-    if (speed > 255) speed = 255;
-    if (speed < -255) speed = -255;
-    
-    if (std::abs(speed) < 15) {
-        stop();
-        return;
-    }
-    
-    // Přepočet rychlosti 0-255 na duty_cycle v nanosekundách (0 - 1000000)
-    int duty_ns = (std::abs(speed) * 1000000) / 255;
-    
-    if (speed > 0) {
-        writeSysfs(pwmBasePathR, "duty_cycle", "0");
-        writeSysfs(pwmBasePathL, "duty_cycle", std::to_string(duty_ns));
+    const int clamped = std::clamp(speed, -PWM_MAX, PWM_MAX);
+    if (std::abs(clamped) < DEADBAND) {
+        currentSpeed.store(0);
     } else {
-        writeSysfs(pwmBasePathL, "duty_cycle", "0");
-        writeSysfs(pwmBasePathR, "duty_cycle", std::to_string(duty_ns));
+        currentSpeed.store(clamped);
     }
 }
 
 void Motor::stop() {
-    writeSysfs(pwmBasePathL, "duty_cycle", "0");
-    writeSysfs(pwmBasePathR, "duty_cycle", "0");
+    currentSpeed.store(0);
+}
+
+void Motor::shutdown() {
+    currentSpeed.store(0);
+    running.store(false);
+    if (pwmThread.joinable()) {
+        pwmThread.join();
+    }
+    gpioL.closeLine();
+    gpioR.closeLine();
+}
+
+void Motor::pwmLoop() {
+    using clock = std::chrono::steady_clock;
+    constexpr auto period = std::chrono::microseconds(SW_PWM_PERIOD_US);
+
+    gpioL.setValue(0);
+    gpioR.setValue(0);
+
+    while (running.load()) {
+        const int speed = currentSpeed.load();
+        const auto cycleStart = clock::now();
+
+        if (speed == 0) {
+            gpioL.setValue(0);
+            gpioR.setValue(0);
+            std::this_thread::sleep_until(cycleStart + period);
+            continue;
+        }
+
+        const bool forward = speed > 0;
+        const int mag = std::abs(speed);
+        GpioOutputLine& active = forward ? gpioL : gpioR;
+        GpioOutputLine& inactive = forward ? gpioR : gpioL;
+
+        // Bezpečnost BTS7960: neaktivní kanál vždy nejprve stáhnout na 0
+        inactive.setValue(0);
+
+        if (mag >= PWM_MAX) {
+            active.setValue(1);
+            std::this_thread::sleep_until(cycleStart + period);
+            continue;
+        }
+
+        const int onUs = (mag * SW_PWM_PERIOD_US) / PWM_MAX;
+        if (onUs > 0) {
+            active.setValue(1);
+            std::this_thread::sleep_until(cycleStart + std::chrono::microseconds(onUs));
+        }
+
+        active.setValue(0);
+        std::this_thread::sleep_until(cycleStart + period);
+    }
+
+    gpioL.setValue(0);
+    gpioR.setValue(0);
 }

@@ -1,27 +1,35 @@
 #pragma once
+
 #include <atomic>
-#include <thread>
 #include <string>
+#include <thread>
+
+#include "gpio_line.h"
 
 class Encoder {
 private:
-    int pinA;
-    int pinB;
-    std::string gpioPathA;
-    std::string gpioPathB;
-    std::atomic<long long> count;
-    std::atomic<bool> running;
+    std::string label;
+    std::string lineNameA;
+    std::string lineNameB;
+
+    GpioEdgeEventLine gpioEventA;
+    GpioInputLine gpioInputB;
+
+    std::atomic<long long> count{0};
+    std::atomic<bool> running{false};
     std::thread isrThread;
 
-    bool writeSysfs(const std::string& path, const std::string& value);
-    std::string readSysfs(const std::string& path);
     void interruptRoutine();
 
 public:
-    Encoder(int pin_a, int pin_b);
+    Encoder(std::string enc_label, std::string line_a, std::string line_b);
     ~Encoder();
-    
-    void begin();
-    long long getCount();
+
+    Encoder(const Encoder&) = delete;
+    Encoder& operator=(const Encoder&) = delete;
+
+    bool begin(bool dry_run = false);
+    void shutdown();
+    long long getCount() const;
     void clearCount();
 };
